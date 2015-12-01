@@ -1,0 +1,13 @@
+{
+  "undef": true,
+  "unused": true,
+  "predef": [
+    "console",
+    "document",
+    "jQuery",
+    "setTimeout",
+    "tinymce",
+    "tinyMCE",
+    "window"
+  ]
+}

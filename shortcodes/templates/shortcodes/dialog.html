@@ -1,0 +1,20 @@
+{% load mezzanine_tags staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    {{ form.media }}
+
+    {% compress css %}
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+    <link rel="stylesheet" href="{% static "css/mezzanine.css" %}">
+    <link rel="stylesheet" href="{% static "shortcodes/dialog.css" %}">
+    {% endcompress %}
+</head>
+<body>
+    {% errors_for form %}
+    <form action="{{ request.path }}" method="post">
+        {% csrf_token %}
+        {% fields_for form %}
+    </form>
+</body>
+</html>

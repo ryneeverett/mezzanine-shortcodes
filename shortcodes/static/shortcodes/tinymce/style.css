@@ -1,0 +1,10 @@
+.mezzanine-shortcodes {
+  display: table-cell;
+  height: 3rem;
+  width: 10rem;
+  border: 1px solid black;
+  background-repeat: no-repeat;
+  background-position: center;
+  text-align: center;
+  vertical-align: middle;
+}
