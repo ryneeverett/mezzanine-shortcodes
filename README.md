@@ -226,7 +226,7 @@ python manage.py createdb --noinput
 python manage.py runserver
 ```
 
-Then go to `localhost:8000/admin`, log in with `admin` / `default`, and edit a Page to see the extra toolbar menus/buttons.
+Then go to `127.0.0.1:8000/admin`, log in with `admin` / `default`, and edit a Page to see the extra toolbar menus/buttons.
 
 Running the Tests
 -----------------
