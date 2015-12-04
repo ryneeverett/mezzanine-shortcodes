@@ -1,7 +1,11 @@
 from mezzanine.core import forms
 from django.contrib.sites.models import Site
+from django.db.utils import ProgrammingError
 
-DOMAIN = Site.objects.get_current().domain
+try:
+    DOMAIN = Site.objects.get_current().domain
+except ProgrammingError:  # Database hasn't been initialized yet.
+    DOMAIN = ''
 
 
 class TinyMceWidget(forms.TinyMceWidget):

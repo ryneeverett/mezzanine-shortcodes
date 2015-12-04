@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 
 if __name__ == "__main__":
 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     try:
         site = Site.objects.get_current()
-    except OperationalError:  # Database hasn't been created yet.
+    except (OperationalError, ProgrammingError):  # database isn't initialized
         pass
     else:
         site.domain = '127.0.0.1:{port}'.format(port=addrport)
