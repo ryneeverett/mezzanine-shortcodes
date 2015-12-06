@@ -12,5 +12,5 @@ def run_module(*modules):
     django.setup()
 
     testrunner = get_runner(settings)()
-    failures = testrunner.run_tests([*modules])
+    failures = testrunner.run_tests(modules)
     sys.exit(bool(failures))
