@@ -30,7 +30,7 @@ Installation
 Pip install this package:
 
 ```sh
-pip install -e git+https://github.com/ryneeverett/mezzanine-shortcodes.git
+pip install -e git+https://github.com/ryneeverett/mezzanine-shortcodes.git@0.1.1#egg=mezzanine_shortcodes
 ```
 
 Now make the following changes in your project:
@@ -59,7 +59,7 @@ INSTALLED_APPS = (
 
 *urls.py*
 
-```
+```py
 urlpatterns += patterns('',
     ...
     # MEZZANINE-SHORTCODE'S URLS
