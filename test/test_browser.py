@@ -237,6 +237,7 @@ class TestAdmin(SplinterTestCase):
         self.assertEqual(
             self.jQueryDialog(".find('#id_entity').val()"), 'Squidward')
 
+    @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open dialog.")
     def test_icon(self):
         self.browser.execute_script("""\
           jQuery('button > .mce-ico').filter(function() {{
@@ -308,6 +309,7 @@ class TestPage(SplinterTestCase):
 
         # Save page.
         self.browser.find_by_value('Save').click()
+        time.sleep(5)  # XXX
         self.assertTrue(self.browser.is_text_present(  # wait for page to save
             'The Rich text page "Some Page" was added successfully.', 5))
 
