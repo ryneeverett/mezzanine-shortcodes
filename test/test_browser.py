@@ -1,5 +1,4 @@
 import sys
-import copy
 import time
 import unittest
 
@@ -12,18 +11,12 @@ import splinter
 import testutils
 
 
-args = copy.copy(sys.argv)
+DEBUG = '--debug' in sys.argv
 
+drivers = ['phantomjs', 'firefox', 'chrome']
 try:
-    args.remove('--debug')
-except ValueError:
-    DEBUG = False
-else:
-    DEBUG = True
-
-try:
-    WEBDRIVER = args[1]
-except IndexError:
+    WEBDRIVER = set(drivers).intersection(sys.argv).pop()
+except KeyError:
     WEBDRIVER = 'phantomjs'
 
 
