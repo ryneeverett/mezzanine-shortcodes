@@ -6,11 +6,7 @@ import collections
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
-from mezzanine.utils.models import LazyModelOperations
-
 from . import state, utils
-
-lazy_model_ops = LazyModelOperations()
 
 
 class Shortcode(object):
@@ -20,22 +16,13 @@ class Shortcode(object):
         self.fn = fn
         self.modelform = modelform
         self.tooltip = kwargs.get('tooltip')
+        self.displayname = modelform._meta.model._meta.verbose_name
 
         icon = kwargs.get('icon')
         self.iconurl = staticfiles.static(icon) if icon else icon
 
-        lazy_model_ops.add(self._post_model_load_hook, modelform._meta.model)
-
-        if settings.DEBUG and self.name in state.SHORTCODES:
-            self.warn("'{name}' was shadowed!".format(name=self.name))
-
-        state.SHORTCODES[self.name] = self
-
-    def _post_model_load_hook(self, model):
-        self.displayname = model._meta.verbose_name
-
-        # Display names must be unique.
         if settings.DEBUG:
+            # Display names must be unique.
             if self.displayname in state.DEBUG_DISPLAYNAMES:
                 self.warn("""
                 '{displayname}' is not a unique verbose_name!
@@ -43,7 +30,14 @@ class Shortcode(object):
                     displayname=self.displayname,
                     model=self.modelform._meta.model._meta.object_name)
                 )
-            state.DEBUG_DISPLAYNAMES.add(self.displayname)
+            else:
+                state.DEBUG_DISPLAYNAMES.add(self.displayname)
+
+            # Probably don't want to shadow names either.
+            if self.name in state.SHORTCODES:
+                warnings.warn("'{name}' was shadowed!".format(name=self.name))
+
+        state.SHORTCODES[self.name] = self
 
     def warn(self, msg):
         warnings.warn_explicit(
