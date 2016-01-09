@@ -134,9 +134,9 @@ if __name__ == "__main__":
 API Reference
 =============
 
-Add your shortcode definitions to any installed app in any module imported on initialization. (I.e., to `__init__.py` or a module imported by `__init__.py`.)
+Add your shortcode definitions to a `shortcodes.py` module in any installed app.
 
-*All buttons/mnenubuttons must have unique names (`__name__`). All `ModelForm`'s must have unique `verbose_name`'s and a `ModelForm` cannot be associated with multiple shortcodes.*
+*All buttons/menubuttons must have unique names (`__name__`). All `ModelForm`'s must have unique `verbose_name`'s and a `ModelForm` cannot be associated with multiple shortcodes.*
 
 Buttons
 -------
