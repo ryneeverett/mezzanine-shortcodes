@@ -1,3 +1,4 @@
+import inspect
 import textwrap
 import warnings
 import collections
@@ -26,7 +27,7 @@ class Shortcode(object):
         lazy_model_ops.add(self._post_model_load_hook, modelform._meta.model)
 
         if settings.DEBUG and self.name in state.SHORTCODES:
-            warnings.warn("'{name}' was shadowed!".format(name=self.name))
+            self.warn("'{name}' was shadowed!".format(name=self.name))
 
         state.SHORTCODES[self.name] = self
 
@@ -36,13 +37,19 @@ class Shortcode(object):
         # Display names must be unique.
         if settings.DEBUG:
             if self.displayname in state.DEBUG_DISPLAYNAMES:
-                warnings.warn(textwrap.dedent("""
-                    '{displayname}' is not a unique verbose_name!
-                    Did you reuse model '{model}'?""".format(
-                        displayname=self.displayname,
-                        model=self.modelform._meta.model._meta.object_name)
-                ))
+                self.warn("""
+                '{displayname}' is not a unique verbose_name!
+                Did you reuse model '{model}'?""".format(
+                    displayname=self.displayname,
+                    model=self.modelform._meta.model._meta.object_name)
+                )
             state.DEBUG_DISPLAYNAMES.add(self.displayname)
+
+    def warn(self, msg):
+        warnings.warn_explicit(
+            textwrap.dedent(msg), UserWarning,
+            filename=inspect.getfile(self.fn),
+            lineno=inspect.getsourcelines(self.fn)[1])
 
 
 class Button(Shortcode):
