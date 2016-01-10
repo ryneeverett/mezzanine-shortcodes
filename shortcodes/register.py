@@ -1,12 +1,11 @@
 import inspect
 import textwrap
 import warnings
-import collections
 
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
-from . import state, utils
+from . import state
 
 
 class Shortcode(object):
@@ -55,7 +54,7 @@ class Button(Shortcode):
 
 
 class MenuType(type):
-    _buttons = collections.deque()  # [(fn, kwargs), ...]
+    buttons = []  # [(fn, kwargs), ...]
 
     def __new__(cls, name, bases, classdict):
         """ Register a menu on definition. """
@@ -71,6 +70,7 @@ class MenuType(type):
             button_attrs = ['name', 'displayname', 'iconurl']
             klass.buttons = [{k: getattr(button, k) for k in button_attrs}
                              for button in cls.buttons]
+            cls.buttons.clear()
 
             state.TOOLBAR.append(klass)
 
@@ -78,9 +78,4 @@ class MenuType(type):
 
     @classmethod
     def createButton(cls, *args, **kwargs):
-        cls._buttons.append(Shortcode(*args, **kwargs))
-
-    @utils.classproperty
-    def buttons(cls):
-        while cls._buttons:
-            yield cls._buttons.popleft()
+        cls.buttons.append(Shortcode(*args, **kwargs))
