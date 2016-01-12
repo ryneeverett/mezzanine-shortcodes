@@ -1,5 +1,8 @@
+import re
 import sys
 import time
+import inspect
+import tempfile
 import unittest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -85,6 +88,33 @@ class SplinterTestCase(StaticLiveServerTestCase):
     def fillPerson(self, person):
         self.jQueryDialog(
             ".find('#id_entity').val('{person}')".format(person=person))
+
+    def debug(self, _callable):
+        """
+        Capture screen and html before executing the callable.
+
+        WARNING: Taking a screenshot can cause phantomjs tests to pass.
+        """
+        # Introspect. Adapted from http://stackoverflow.com/a/8856387/1938621.
+        caller_frame = inspect.currentframe().f_back
+        frame_info = inspect.getframeinfo(caller_frame)
+
+        lineno = frame_info.lineno
+
+        lines = ''.join([line.strip() for line in frame_info.code_context])
+        line = re.search(r'debug\((.+?)\)$', lines).group(1)
+
+        # Capture screen and html.
+        filename = '-'.join([str(lineno), line, WEBDRIVER.upper()])
+
+        self.browser.screenshot(name=filename)
+
+        with tempfile.NamedTemporaryFile(
+                prefix=filename, suffix='.html', delete=False) as f:
+            f.write(self.browser.html.encode('utf-8'))
+
+        # Call callable.
+        _callable()
 
 
 class TestAdmin(SplinterTestCase):
