@@ -352,4 +352,4 @@ class TestPage(SplinterTestCase):
         self.assertTrue(self.browser.is_text_present('Hello Squidward!'), 5)
 
 if __name__ == '__main__':
-    testutils.run_module('test_browser')
+    testutils.test_module('test_browser')

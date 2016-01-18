@@ -13,4 +13,9 @@ def run_module(*modules):
 
     testrunner = get_runner(settings)()
     failures = testrunner.run_tests(modules)
-    sys.exit(bool(failures))
+    return bool(failures)
+
+
+def test_module(*modules):
+    is_failure = run_module(modules)
+    sys.exit(is_failure)

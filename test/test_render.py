@@ -62,4 +62,4 @@ class TestFilters(TestCase):
 
 
 if __name__ == '__main__':
-    testutils.run_module('test_render')
+    testutils.test_module('test_render')

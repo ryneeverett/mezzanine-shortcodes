@@ -175,4 +175,4 @@ class TestGenericButton(TestShortcodeBase):
 
 
 if __name__ == '__main__':
-    testutils.run_module('test_register')
+    testutils.test_module('test_register')
