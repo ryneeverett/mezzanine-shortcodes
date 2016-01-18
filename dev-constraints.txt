@@ -1,0 +1,2 @@
+selenium<2.49.0
+# https://github.com/SeleniumHQ/selenium/issues/1469
