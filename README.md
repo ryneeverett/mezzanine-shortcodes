@@ -60,12 +60,12 @@ INSTALLED_APPS = (
 *urls.py*
 
 ```py
-urlpatterns += patterns('',
+urlpatterns = [
     ...
     # MEZZANINE-SHORTCODE'S URLS
     # --------------------------
     url("^shortcodes/", include('shortcodes.urls')),
-)
+]
 ```
 
 *tinymce_setup.js*
