@@ -65,6 +65,13 @@ urlpatterns = [
     # MEZZANINE-SHORTCODE'S URLS
     # --------------------------
     url("^shortcodes/", include('shortcodes.urls')),
+    ...
+    # MEZZANINE'S URLS
+    # ----------------
+    # ADD YOUR OWN URLPATTERNS *ABOVE* THE LINE BELOW.
+    # ``mezzanine.urls`` INCLUDES A *CATCH ALL* PATTERN
+    # FOR PAGES, SO URLPATTERNS ADDED BELOW ``mezzanine.urls``
+    # WILL NEVER BE MATCHED!
 ]
 ```
 

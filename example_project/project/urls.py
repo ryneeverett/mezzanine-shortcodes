@@ -48,6 +48,10 @@ urlpatterns = [
 
     # url("^$", "mezzanine.blog.views.blog_post_list", name="home"),
 
+    # MEZZANINE-SHORTCODE'S URLS
+    # --------------------------
+    url("^shortcodes/", include('shortcodes.urls')),
+
     # MEZZANINE'S URLS
     # ----------------
     # ADD YOUR OWN URLPATTERNS *ABOVE* THE LINE BELOW.
@@ -76,10 +80,6 @@ urlpatterns = [
     # need to use the ``SITE_PREFIX`` setting as well.
 
     # ("^%s/" % settings.SITE_PREFIX, include("mezzanine.urls"))
-
-    # MEZZANINE-SHORTCODE'S URLS
-    # --------------------------
-    url("^shortcodes/", include('shortcodes.urls')),
 ]
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
