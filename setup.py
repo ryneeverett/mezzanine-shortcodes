@@ -2,15 +2,13 @@ import setuptools
 
 from shortcodes import __version__
 
-URL = 'https://github.com/ryneeverett/mezzanine-shortcodes'
-
 setuptools.setup(
     name='mezzanine-shortcodes',
     description=(
         "A Mezzanine package for adding buttons and menus to the richtext "
         "editor by simply decorating a python function."),
     version=__version__,
-    url=URL,
+    url='https://github.com/ryneeverett/mezzanine-shortcodes',
     author='Ryne Everett',
     author_email='ryneeverett@gmail.com',
     license='BSD',
