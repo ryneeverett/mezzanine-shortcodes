@@ -30,7 +30,7 @@ Installation
 Pip install this package:
 
 ```sh
-pip install -e git+https://github.com/ryneeverett/mezzanine-shortcodes.git@v0.1.2#egg=mezzanine_shortcodes
+pip install mezzanine-shortcodes
 ```
 
 Now make the following changes in your project:
