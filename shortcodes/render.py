@@ -38,4 +38,5 @@ def richtext_filters(html):
                 warnings.warn(str(e))
         tag.replace_with(BeautifulSoup(content, 'html.parser'))
 
-    return str(dom)
+    # BeautifulSoup adds closing br tags, which the browser interprets as br tags.
+    return str(dom).replace("</br>", "")
