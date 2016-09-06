@@ -1,26 +1,13 @@
 import warnings
 from django.conf import settings
-from . import state
+
+from .register import Shortcode
 from .utils import ShortcodeSoup
 
 
 def getcontent(func, pk):
-    try:
-        shortcode = state.SHORTCODES[func]
-    except KeyError:
-        raise KeyError(
-            "Attempted to call nonexistant shortcode '{func}'.".format(
-                func=func))
-
-    model = shortcode.modelform._meta.model
-
-    try:
-        instance = model.objects.get(pk=pk)
-    except model.DoesNotExist:
-        raise model.DoesNotExist(
-            "Model {model} instance {pk} does not exist.".format(
-                model=model, pk=pk))
-
+    shortcode = Shortcode.from_func(func)
+    instance = shortcode.get_instance(pk=pk)
     return shortcode.fn(instance)
 
 

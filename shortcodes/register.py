@@ -13,6 +13,7 @@ class Shortcode(object):
         """ Prepare metadata and register function. """
         self.name = name
         self.fn = fn
+        self.model = modelform._meta.model
         self.modelform = modelform
         self.tooltip = kwargs.get('tooltip')
         self.displayname = modelform._meta.model._meta.verbose_name
@@ -37,6 +38,19 @@ class Shortcode(object):
                 warnings.warn("'{name}' was shadowed!".format(name=self.name))
 
         state.SHORTCODES[self.name] = self
+
+    @classmethod
+    def from_func(cls, func):
+        try:
+            shortcode = state.SHORTCODES[func]
+        except KeyError:
+            raise KeyError(
+                "Attempted to access nonexistant shortcode '{func}'.".format(
+                    func=func))
+        return shortcode
+
+    def get_instance(self, **kwargs):
+        return self.model.objects.get(**kwargs)
 
     def warn(self, msg):
         warnings.warn_explicit(
