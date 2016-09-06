@@ -21,7 +21,8 @@ def metadata(request):
 
 
 @staff_member_required
-def new(request, name):
+def dialog(request, name):
+    """ Serve the modelform for a new shortcode instance in a dialog box. """
     modelformclass = state.SHORTCODES[name].modelform
 
     if request.method == 'POST':
