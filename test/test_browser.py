@@ -71,6 +71,14 @@ class SplinterTestCase(StaticLiveServerTestCase):
         return [elem.text for elem in
                 self.browser.find_by_css('.messagelist > li')]
 
+    @property
+    def source(self):
+        self.browser.find_by_css('.mce-i-code').first.click()
+        source = self.browser.find_by_css('textarea.mce-textbox').first.value
+        self.browser.execute_script(
+            "jQuery(\"button:contains('Cancel')\").click()")
+        return source
+
     def assertInMessagelist(self, regex):
         self.assertTrue(re.search(regex, '\n'.join(self.messagelist)))
 
@@ -181,14 +189,8 @@ class TestAdmin(SplinterTestCase):
         self.clickInsert()
         time.sleep(1)
 
-        # Get source code.
-        self.browser.find_by_css('.mce-i-code').first.click()
-        source = self.browser.find_by_css('textarea.mce-textbox').first.value
-        shortcode = ShortcodeSoup(source).find_shortcodes().pop()
-        self.browser.execute_script(
-            "jQuery(\"button:contains('Cancel')\").click()")
-
         # Check source code.
+        shortcode = ShortcodeSoup(self.source).find_shortcodes().pop()
         classes = shortcode['class']
         self.assertIn('mezzanine-shortcodes', classes)
         self.assertEqual(shortcode['data-name'], 'featureful_button')
