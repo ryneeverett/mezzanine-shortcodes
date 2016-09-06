@@ -66,6 +66,14 @@ class SplinterTestCase(StaticLiveServerTestCase):
         cls.browser.quit()
         super().tearDownClass()
 
+    @property
+    def messagelist(self):
+        return [elem.text for elem in
+                self.browser.find_by_css('.messagelist > li')]
+
+    def assertInMessagelist(self, regex):
+        self.assertTrue(re.search(regex, '\n'.join(self.messagelist)))
+
     def visit_relativeurl(self, relativeurl):
         # This can be a classmethod in django 1.9:
         # https://code.djangoproject.com/ticket/24965
@@ -85,6 +93,14 @@ class SplinterTestCase(StaticLiveServerTestCase):
         else:
             # XXX Doesn't work on phantomjs.
             self.browser.find_by_text('Insert').first.click()
+
+    def savePage(self):
+        self.browser.fill('title', 'Some Page')
+        self.browser.find_by_value('Save and continue editing').click()
+        time.sleep(5)  # XXX
+        self.browser.is_element_present_by_css('.messagelist > .success')
+        self.assertInMessagelist(
+            'The Rich text page "Some Page" was (added|changed) successfully.')
 
     def fillPerson(self, person):
         self.jQueryDialog(
@@ -320,9 +336,6 @@ class TestAdmin(SplinterTestCase):
 
 class TestPage(SplinterTestCase):
     def test_page(self):
-        # Create page.
-        self.browser.fill('title', 'Some Page')
-
         # Insert Featureful Button shortcode.
         self.browser.find_by_text('Featureful Button').first.click()
         self.fillPerson('Spongebob')
@@ -337,11 +350,7 @@ class TestPage(SplinterTestCase):
         self.fillPerson('Squidward')
         self.clickInsert()
 
-        # Save page.
-        self.browser.find_by_value('Save').click()
-        time.sleep(5)  # XXX
-        self.assertTrue(self.browser.is_text_present(  # wait for page to save
-            'The Rich text page "Some Page" was added successfully.', 5))
+        self.savePage()
 
         # Navigate to page.
         self.visit_relativeurl('/admin/logout/')
