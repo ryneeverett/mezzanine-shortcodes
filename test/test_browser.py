@@ -8,8 +8,9 @@ import unittest
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium.webdriver.common.keys import Keys
-from bs4 import BeautifulSoup
 import splinter
+
+from shortcodes.utils import ShortcodeSoup
 
 import testutils
 
@@ -167,8 +168,7 @@ class TestAdmin(SplinterTestCase):
         # Get source code.
         self.browser.find_by_css('.mce-i-code').first.click()
         source = self.browser.find_by_css('textarea.mce-textbox').first.value
-        dom = BeautifulSoup(source, 'html.parser')
-        shortcode = dom.find('div', class_='mezzanine-shortcodes')
+        shortcode = ShortcodeSoup(source).find_shortcodes().pop()
         self.browser.execute_script(
             "jQuery(\"button:contains('Cancel')\").click()")
 

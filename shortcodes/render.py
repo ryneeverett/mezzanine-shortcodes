@@ -1,7 +1,7 @@
 import warnings
 from django.conf import settings
-from bs4 import BeautifulSoup
 from . import state
+from .utils import ShortcodeSoup
 
 
 def getcontent(func, pk):
@@ -25,9 +25,9 @@ def getcontent(func, pk):
 
 
 def richtext_filters(html):
-    dom = BeautifulSoup(html, 'html.parser')
+    dom = ShortcodeSoup(html)
 
-    for tag in dom.find_all('div', class_='mezzanine-shortcodes'):
+    for tag in dom.find_shortcodes():
         try:
             content = getcontent(tag.get('data-name'), tag.get('data-pk'))
         except Exception as e:
@@ -36,7 +36,8 @@ def richtext_filters(html):
             else:
                 content = ''
                 warnings.warn(str(e))
-        tag.replace_with(BeautifulSoup(content, 'html.parser'))
+        tag.replace_with(ShortcodeSoup(content))
 
-    # BeautifulSoup adds closing br tags, which the browser interprets as br tags.
+    # BeautifulSoup adds closing br tags, which the browser interprets as
+    # additional tags.
     return str(dom).replace("</br>", "")
