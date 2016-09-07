@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -28,18 +29,23 @@ def dialog(request, name):
     if request.method == 'POST':
         modelform = modelformclass(request.POST)
         if modelform.is_valid():
-            modelform.save()
+            pending_id = (
+                request.GET['pending'] if 'pending' in request.GET else
+                uuid.uuid4().hex)
+            state.PENDING_INSTANCES[pending_id] = modelform.instance
             return HttpResponse(
-                "<script src='{src}' data-pk='{pk}'></script>".format(
+                "<script src='{src}' data-pending='{pending_id}'>"
+                "</script>".format(
                     src=staticfiles.static('shortcodes/insert_shortcode.js'),
-                    pk=modelform.instance.pk))
+                    pending_id=pending_id))
     else:
-        try:
-            pk = request.GET['pk']
-        except KeyError:  # new instance
-            modelform = modelformclass()
-        else:  # edit instance
-            model = modelformclass._meta.model.objects.get(pk=pk)
+        if 'pk' in request.GET:  # edit saved instance
+            model = modelformclass._meta.model.objects.get(
+                pk=request.GET['pk'])
             modelform = modelformclass(instance=model)
+        elif 'pending' in request.GET:  # edit pending instance
+            modelform = state.PENDING_INSTANCES[pending_id]
+        else:  # new instance
+            modelform = modelformclass()
 
     return render(request, 'shortcodes/dialog.html', {'form': modelform})

@@ -3,7 +3,7 @@ from mezzanine.conf import register_setting
 register_setting(
     name='RICHTEXT_ALLOWED_ATTRIBUTES',
     append=True,
-    default=('data-name', 'data-pk'),
+    default=('data-name', 'data-pending', 'data-pk'),
 )
 
 register_setting(

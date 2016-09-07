@@ -173,7 +173,10 @@ How it Works
 ============
 
 - As Django starts up and your apps are initialized, your decorated shortcodes are registered.
-- When staff users edit a richtext page, metadata about your shortcodes is injected into the page by a Django view and rendered into menus/buttons by javascript. When a button is clicked, its `ModelForm` is rendered into a dialog. When submitted, a placeholder html element is added to store a reference to the `ModelForm` and primary key of the instance.
+- When staff users edit a richtext page:
+    - Metadata about your shortcodes is injected into the page by a Django view and rendered into menus/buttons by javascript.
+    - When a button is clicked, its `ModelForm` is rendered into a dialog. When submitted, a placeholder html element is added to store a reference to the `ModelForm` and the `ModelForm` instance.
+    - When the page is saved, `ModelForm` instance is saved and it's reference is replaced with a reference to the primary key of the instance.
 - When users view a richtext page, the placeholders are parsed, the `ModelForm` instances retrieved and passed into their associated function, and the placeholders are replaced with the return value.
 
 Developing

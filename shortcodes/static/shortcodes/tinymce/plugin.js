@@ -22,10 +22,14 @@
 
       function openDialog(displayname, name, $elem) {
         // Based on the example plugin.
-        var isEdit = typeof $elem !== 'undefined',
-            instance = isEdit ? 'pk=' + $elem.data('pk') : '';
+        var isNew = typeof $elem === 'undefined',
+            instance = '';
 
-        window.SHORTCODES.activeDialog = {name: name, $elem: $elem, isEdit: isEdit};
+        if (!isNew) {
+          instance = $elem.data('pk') ? 'pk=' + $elem.data('pk') : 'pending=' + $elem.data('pending');
+        }
+
+        window.SHORTCODES.activeDialog = {name: name, $elem: $elem, isNew: isNew};
 
         editor.windowManager.open({
           title: displayname,

@@ -12,6 +12,8 @@ import splinter
 
 from shortcodes.utils import ShortcodeSoup
 
+from example_app.models import FeaturefulButton
+
 import testutils
 
 
@@ -87,12 +89,18 @@ class SplinterTestCase(StaticLiveServerTestCase):
         # https://code.djangoproject.com/ticket/24965
         self.browser.visit(self.live_server_url + relativeurl)
 
-    def jQueryDialog(self, method):
+    def jQueryIframe(self, ascendant_selector, method):
         # XXX Better to use splinter's get_iframe but I haven't found a way to
         # assign name or id to the iframe.
         return self.browser.evaluate_script(
-            "jQuery('.mce-container-body.mce-abs-layout iframe').contents()" +
-            method)
+            "jQuery('{selector} iframe').contents(){method}".format(
+                selector=ascendant_selector, method=method))
+
+    def jQueryDialog(self, method):
+        return self.jQueryIframe('.mce-container-body.mce-abs-layout', method)
+
+    def jQueryContent(self, method):
+        return self.jQueryIframe('.mce-edit-area', method)
 
     def clickInsert(self):
         if WEBDRIVER == 'phantomjs':
@@ -191,10 +199,22 @@ class TestAdmin(SplinterTestCase):
 
         # Check source code.
         shortcode = ShortcodeSoup(self.source).find_shortcodes().pop()
-        classes = shortcode['class']
-        self.assertIn('mezzanine-shortcodes', classes)
+        self.assertTrue(shortcode.has_attr('data-pending'))
+        self.assertFalse(shortcode.has_attr('data-pk'))
+
+        # Save page.
+        self.savePage()
+
+        # Check source code.
+        shortcode = ShortcodeSoup(self.source).find_shortcodes().pop()
+        self.assertEqual(shortcode.text, 'Featureful Button')
+        self.assertEqual(shortcode['class'], ['mezzanine-shortcodes'])
         self.assertEqual(shortcode['data-name'], 'featureful_button')
-        self.assertTrue(isinstance(int(shortcode['data-pk']), int))
+        self.assertIsInstance(int(shortcode['data-pk']), int)
+        self.assertEqual(shortcode['contenteditable'], 'false')
+        self.assertEqual(
+            set(shortcode.attrs.keys()),
+            set(('class', 'contenteditable', 'data-pk', 'data-name')))
 
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open contextmenu.")
     def test_editing(self):
@@ -203,6 +223,7 @@ class TestAdmin(SplinterTestCase):
 
         self.fillPerson('Spongebob')
         self.clickInsert()
+        self.savePage()
 
         # Open edit dialog.
         with self.browser.get_iframe('id_content_ifr') as iframe:
@@ -273,6 +294,7 @@ class TestAdmin(SplinterTestCase):
         # Modify input and submit.
         self.fillPerson('Squidward')
         self.clickInsert()
+        self.savePage()
 
         # Open edit dialog.
         with self.browser.get_iframe('id_content_ifr') as iframe:
@@ -284,6 +306,26 @@ class TestAdmin(SplinterTestCase):
         # Check that value has been modified.
         self.assertEqual(
             self.jQueryDialog(".find('#id_entity').val()"), 'Squidward')
+
+    def test_remove_before_saving(self):
+        """
+        Shortcodes removed before saving the page aren't added to database.
+        """
+        # Create shortcode.
+        self.browser.find_by_text('Featureful Button').first.click()
+        self.fillPerson('Spongebob')
+        self.clickInsert()
+
+        if WEBDRIVER == 'phantomjs':
+            time.sleep(1)  # XXX
+
+        # Remove shortcode.
+        self.jQueryContent(".find('body').empty().append('blah')")
+
+        # Save page.
+        self.savePage()
+
+        self.assertEqual(FeaturefulButton.objects.count(), 0)
 
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open dialog.")
     def test_icon(self):
