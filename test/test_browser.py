@@ -110,6 +110,11 @@ class SplinterTestCase(StaticLiveServerTestCase):
             # XXX Doesn't work on phantomjs.
             self.browser.find_by_text('Insert').first.click()
 
+    def insertFeaturefulButton(self):
+        self.browser.find_by_text('Featureful Button').first.click()
+        self.fillPerson('Spongebob')
+        self.clickInsert()
+
     def savePage(self):
         self.browser.fill('title', 'Some Page')
         self.browser.find_by_value('Save and continue editing').click()
@@ -219,10 +224,7 @@ class TestAdmin(SplinterTestCase):
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open contextmenu.")
     def test_editing(self):
         # Setup
-        self.browser.find_by_text('Featureful Button').first.click()
-
-        self.fillPerson('Spongebob')
-        self.clickInsert()
+        self.insertFeaturefulButton()
         self.savePage()
 
         # Open edit dialog.
@@ -311,10 +313,7 @@ class TestAdmin(SplinterTestCase):
         """
         Shortcodes removed before saving the page aren't added to database.
         """
-        # Create shortcode.
-        self.browser.find_by_text('Featureful Button').first.click()
-        self.fillPerson('Spongebob')
-        self.clickInsert()
+        self.insertFeaturefulButton()
 
         if WEBDRIVER == 'phantomjs':
             time.sleep(1)  # XXX
