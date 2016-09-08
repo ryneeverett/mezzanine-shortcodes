@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 
 from mezzanine.core.models import RichText
 
@@ -54,5 +54,11 @@ def on_save(sender, **kwargs):
         _delete_tags(old_tags.difference(tags))
 
 
+def on_delete(sender, **kwargs):
+    # Delete all associated shortcode model instances.
+    _delete_tags(ShortcodeSoup(kwargs['instance'].content).find_shortcodes())
+
+
 for subclass in _get_subclasses(RichText):
     pre_save.connect(on_save, subclass)
+    pre_delete.connect(on_delete, subclass)

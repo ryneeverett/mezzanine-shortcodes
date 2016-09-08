@@ -344,6 +344,17 @@ class TestAdmin(SplinterTestCase):
             self.jQueryContent(".find('body').empty().append('blah')")
             self.savePage()
 
+    def test_remove_after_deleting(self):
+        """
+        When a page is deleted, all associated shortcodes are deleted too.
+        """
+        self.insertFeaturefulButton()
+        self.savePage()
+
+        with self.assertDeletesInstance(FeaturefulButton):
+            self.browser.find_by_text('Delete').click()
+            self.browser.find_by_value("Yes, I'm sure").click()
+
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open dialog.")
     def test_icon(self):
         self.browser.execute_script("""\
