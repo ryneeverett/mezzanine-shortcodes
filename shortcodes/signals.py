@@ -3,7 +3,15 @@ from django.db.models.signals import pre_save
 from mezzanine.core.models import RichText
 
 from . import state
+from .register import Shortcode
 from .utils import ShortcodeSoup
+
+
+def _delete_tags(tags):
+    for tag in tags:
+        shortcode = Shortcode.from_func(tag.get('data-name'))
+        instance = shortcode.get_instance(pk=tag.get('data-pk'))
+        instance.delete()
 
 
 def _get_subclasses(klass):
@@ -35,6 +43,16 @@ def on_save(sender, **kwargs):
         del tag['data-pending']
         tag['data-pk'] = model_instance.pk
     instance.content = str(soup)
+
+    # Delete any shortcode model instances that were removed since the last
+    # content save.
+    if instance.pk is not None and (not kwargs['update_fields'] or
+                                    'content' in kwargs['update_fields']):
+        old_instance = sender.objects.get(pk=instance.pk)
+        old_tags = set(ShortcodeSoup(old_instance.content).find_shortcodes())
+
+        _delete_tags(old_tags.difference(tags))
+
 
 for subclass in _get_subclasses(RichText):
     pre_save.connect(on_save, subclass)

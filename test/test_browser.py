@@ -4,6 +4,7 @@ import time
 import inspect
 import tempfile
 import unittest
+import contextlib
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
@@ -83,6 +84,12 @@ class SplinterTestCase(StaticLiveServerTestCase):
 
     def assertInMessagelist(self, regex):
         self.assertTrue(re.search(regex, '\n'.join(self.messagelist)))
+
+    @contextlib.contextmanager
+    def assertDeletesInstance(self, model):
+        initial_count = model.objects.count()
+        yield
+        self.assertEqual(initial_count-1, model.objects.count())
 
     def visit_relativeurl(self, relativeurl):
         # This can be a classmethod in django 1.9:
@@ -325,6 +332,17 @@ class TestAdmin(SplinterTestCase):
         self.savePage()
 
         self.assertEqual(FeaturefulButton.objects.count(), 0)
+
+    def test_remove_after_saving(self):
+        """
+        Shortcodes removed after saving the page are removed from the database.
+        """
+        self.insertFeaturefulButton()
+        self.savePage()
+
+        with self.assertDeletesInstance(FeaturefulButton):
+            self.jQueryContent(".find('body').empty().append('blah')")
+            self.savePage()
 
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open dialog.")
     def test_icon(self):
