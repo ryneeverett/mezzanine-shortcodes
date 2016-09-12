@@ -91,10 +91,9 @@ class SplinterTestCase(StaticLiveServerTestCase):
         yield
         self.assertEqual(initial_count-1, model.objects.count())
 
-    def visit_relativeurl(self, relativeurl):
-        # This can be a classmethod in django 1.9:
-        # https://code.djangoproject.com/ticket/24965
-        self.browser.visit(self.live_server_url + relativeurl)
+    @classmethod
+    def visit_relativeurl(cls, relativeurl):
+        cls.browser.visit(cls.live_server_url + relativeurl)
 
     def jQueryIframe(self, ascendant_selector, method):
         # XXX Better to use splinter's get_iframe but I haven't found a way to
