@@ -205,7 +205,7 @@ Then go to `127.0.0.1:8000/admin`, log in with `admin` / `default`, and edit a P
 Running the Tests
 -----------------
 
-- To run browser tests, install python dependencies with `pip install -U -r dev-requirements.txt`.
+- To run browser tests, install python dependencies with `pip install -r dev-requirements.txt`.
 - To run browser tests headless, [install phantomjs](http://phantomjs.org/download.html) on your system. A `ghostdriver.log` file is created (and deleted after every TestCase) which may be useful for debugging these, though running them again with firefox is generally easier.
 
 ```sh
