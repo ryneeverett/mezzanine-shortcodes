@@ -169,6 +169,15 @@ class SomeMenu(shortcodes.Menu):
         'some_menubutton', MyModelForm, 'some_template.html')
 ```
 
+Data Modeling Advise
+====================
+
+Mezzanine-shortcodes is designed for a one-to-one relationship between model instances and references to them in page content. This app even auto-cleans dereferenced model instances so you only have to interact with them through the shortcode forms. In this sense, even though you're defining the models, mezzanine-shortcodes "owns" them. A few concrete pieces of advise follow from this:
+
+- Do not register your modelform in the admin. This adds the temptation to add or delete models directly which will lead to either dangling references or dangling model instances.
+- Use dedicated models. Existing models are presumably being consumed elsewhere and you don't want to give them over to mezzanine-shortcodes, by which you could easily dereference and accidentally delete them. Rather, use relation fields to those existing models.
+- If you think you need a one-to-many relationship you presumably have content you want to avoid duplicating and keep synchronized. Make a separate model to manage this content and a simple shortcode model with a relation field to it.
+
 How it Works
 ============
 
