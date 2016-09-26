@@ -315,6 +315,10 @@ class TestAdmin(SplinterTestCase):
         self.assertEqual(
             self.jQueryDialog(".find('#id_entity').val()"), 'Squidward')
 
+        # Try saving without modifying anything.
+        self.browser.find_by_text('Close').first.click()
+        self.savePage()
+
     def test_remove_before_saving(self):
         """
         Shortcodes removed before saving the page aren't added to database.

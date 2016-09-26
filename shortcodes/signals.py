@@ -30,8 +30,8 @@ def _get_subclasses(klass):
 def on_save(sender, **kwargs):
     instance = kwargs['instance']
     soup = ShortcodeSoup(instance.content)
-    tags = set(
-        soup.find_all('div', 'data-pending', class_='mezzanine-shortcodes'))
+    tags = set(soup.find_all(
+        'div', {'data-pending': True}, class_='mezzanine-shortcodes'))
 
     # Save pending model instances, but only if they're still referenced in the
     # content.
