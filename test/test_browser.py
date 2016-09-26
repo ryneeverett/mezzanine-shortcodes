@@ -307,6 +307,8 @@ class TestAdmin(SplinterTestCase):
         # Open edit dialog.
         with self.browser.get_iframe('id_content_ifr') as iframe:
             shortcode = iframe.find_by_css('.mezzanine-shortcodes').first
+            pk = ShortcodeSoup(
+                shortcode.outer_html).find_shortcodes()[0]['data-pk']
             shortcode.click()  # XXX Shouldn't need to do this.
             shortcode.right_click()
         self.browser.find_by_text('Edit Shortcode').first.click()
@@ -318,6 +320,10 @@ class TestAdmin(SplinterTestCase):
         # Try saving without modifying anything.
         self.browser.find_by_text('Close').first.click()
         self.savePage()
+
+        # Make sure shortcode wasn't wrongfully pruned by the post_save signal.
+        self.assertTrue(FeaturefulButton.objects.filter(pk=pk).exists())
+
 
     def test_remove_before_saving(self):
         """

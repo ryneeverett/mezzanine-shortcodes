@@ -30,12 +30,11 @@ def _get_subclasses(klass):
 def on_save(sender, **kwargs):
     instance = kwargs['instance']
     soup = ShortcodeSoup(instance.content)
-    tags = set(soup.find_all(
-        'div', {'data-pending': True}, class_='mezzanine-shortcodes'))
 
     # Save pending model instances, but only if they're still referenced in the
     # content.
-    for tag in tags:
+    for tag in soup.find_all(
+            'div', {'data-pending': True}, class_='mezzanine-shortcodes'):
         model_instance = state.PENDING_INSTANCES.pop(tag['data-pending'])
         # Save model instance.
         model_instance.save()
@@ -50,8 +49,9 @@ def on_save(sender, **kwargs):
                                     'content' in kwargs['update_fields']):
         old_instance = sender.objects.get(pk=instance.pk)
         old_tags = set(ShortcodeSoup(old_instance.content).find_shortcodes())
+        new_tags = set(soup.find_all('div', class_='mezzanine-shortcodes'))
 
-        _delete_tags(old_tags.difference(tags))
+        _delete_tags(old_tags.difference(new_tags))
 
 
 def on_delete(sender, **kwargs):
