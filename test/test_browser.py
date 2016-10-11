@@ -115,6 +115,8 @@ class SplinterTestCase(StaticLiveServerTestCase):
         else:
             # XXX Doesn't work on phantomjs.
             self.browser.find_by_text('Insert').first.click()
+        # Wait for shortcode insertion.
+        time.sleep(1)
 
     def insertFeaturefulButton(self):
         self.browser.find_by_text('Featureful Button').first.click()

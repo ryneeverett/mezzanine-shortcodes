@@ -6,8 +6,9 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
-from . import state
+from . import state, utils
 
 
 @staff_member_required
@@ -53,10 +54,12 @@ def dialog(request, name):
 def insert_shortcode(request, name, pending_id):
     html = format_html(
         "<div "
-        "class='mezzanine-shortcodes fresh-shortcode' "
+        "class='mezzanine-shortcodes' "
         "data-name='{name}' "
         "data-pending='{pending_id}' "
         "></div>",
         name=name, pending_id=pending_id)
-    js = render_to_string('shortcodes/insert_shortcode.js', {'html': html})
+    html = utils.ShortcodeSoup(html).render_admin_shortcodes()
+    js = render_to_string('shortcodes/insert_shortcode.js', {
+        'html': mark_safe(html), 'pending_id': pending_id})
     return HttpResponse('<script>' + js + '</script>')

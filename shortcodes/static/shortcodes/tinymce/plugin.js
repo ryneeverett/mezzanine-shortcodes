@@ -6,20 +6,6 @@
           SHORTCODEMETA = {},  // {displayname: [<button>], displayname: [<menubutton>]}
           SHORTCODEREPR = {};  // {name: {displayname: '', image: ''}}
 
-      function render() {
-        // Render `this` .mezzanine-shortcodes node to editor.
-        var repr = SHORTCODEREPR[this.getAttribute('data-name')];
-
-        if (!!repr.image) {
-          this.style['background-image'] = "url('" + BASEURL + repr.image + "')";
-        } else {
-          this.textContent = repr.displayname;
-        }
-
-        // Prevent nested shortcodes.
-        this.contentEditable = false;
-      }
-
       function openDialog(displayname, name, $elem) {
         // Based on the example plugin.
         var isNew = typeof $elem === 'undefined',
@@ -51,8 +37,6 @@
 
       // Render buttons/menus.
       if ('SHORTCODES' in window) {
-        window.SHORTCODES.render = render;
-
 
         var getDisplayName = function(button) {
           // XXX All displaynames must be unique.
@@ -143,11 +127,6 @@
       } else {
         console.error('Shortcodes data not found. This is probably a server issue.');
       }
-
-      // Render shortcode representations in the textbox.
-      editor.on('init', function(e) {
-        $(e.target.getDoc()).find('.mezzanine-shortcodes').each(render);
-      });
 
       // Allow editing shortcodes via the contextmenu.
       editor.addMenuItem('shortcode', {

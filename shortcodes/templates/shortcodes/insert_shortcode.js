@@ -1,19 +1,32 @@
 (function($) {
-  var editor = window.parent.tinymce.activeEditor,
-      SHORTCODES = window.parent.SHORTCODES,
-      dialog = SHORTCODES.activeDialog,
-      html = "{{ html }}";
+  var dialog = window.parent.SHORTCODES.activeDialog,
+      editor = window.parent.tinymce.activeEditor,
+      html = '{{ html }}';
 
+  // Insert element.
   if (dialog.isNew) {
-    editor.insertContent(html);
+    var current_node = editor.selection.getNode();
+
+    if (current_node.nodeName.toLowerCase() === 'body') {
+      $(current_node).append(html);
+    } else {
+      $(current_node).after(html);
+    }
   } else {
-    dialog.$elem.replaceWith(html);
+    $(dialog.$elem).replaceWith(html);
   }
 
-  $(editor.getDoc()).find('.mezzanine-shortcodes.fresh-shortcode').each(function() {
-    SHORTCODES.render.apply(this);
-    $(this).removeClass('fresh-shortcode');
-  });
-
+  // Close dialog.
   editor.windowManager.close();
+
+  // Move cursor below shortcode element. Adapted from
+  // http://stackoverflow.com/a/19836226/1938621.
+  editor.selection.select(
+    $(editor.getBody())
+      .find('.mezzanine-shortcodes[data-pending="{{ pending_id }}"]')
+      .next()
+      .get()[0],
+    true
+  );
+  editor.selection.collapse(false);
 })(window.parent.jQuery);
