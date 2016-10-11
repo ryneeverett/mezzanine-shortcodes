@@ -1,3 +1,4 @@
+import unittest
 from unittest import mock
 
 from django.conf import settings
@@ -37,6 +38,7 @@ class TestFilters(TestCase):
         expected_result = POST_HTML.format(content='<p>Hello Stanley!</p>')
         self.assertEqual(result, expected_result)
 
+    @unittest.skip('Issue #8')
     @mock.patch('shortcodes.render.settings.DEBUG', True)
     def test_richtext_filters_error_dev(self):
         with self.assertRaisesRegex(self.model.DoesNotExist, 'does not exist'):

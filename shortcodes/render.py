@@ -7,7 +7,14 @@ from .utils import ShortcodeSoup
 
 def getcontent(func, pk):
     shortcode = Shortcode.from_func(func)
-    instance = shortcode.get_instance(pk=pk)
+    if settings.DEBUG:  # XXX Workaround for #8.
+        try:
+            instance = shortcode.get_instance(pk=pk)
+        except shortcode.model.DoesNotExist as e:
+            warnings.warn(str(e))
+            return ''
+    else:
+        instance = shortcode.get_instance(pk=pk)
     return shortcode.fn(instance)
 
 
