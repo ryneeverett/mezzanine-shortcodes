@@ -423,6 +423,7 @@ class TestAdmin(SplinterTestCase):
         self.assertIn('/static/img/audio.png?name=icon_menubutton',
                       buttons[1].find_by_css('.mce-ico')['style'])
         self.assertEqual(buttons[2].value.strip(), 'generic menubutton')
+        self.assertEqual(buttons[3].value.strip(), 'unsafe menubutton')
 
         # Test genericmenubutton dialog.
         self.browser.find_by_text('generic menubutton').first.click()

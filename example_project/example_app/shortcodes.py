@@ -1,14 +1,17 @@
 from django.forms import model_to_dict
 from django.template.loader import render_to_string
+from django.utils.html import format_html
+
 import shortcodes
+
 from . import models
 
 
 @shortcodes.button(models.FeaturefulButtonForm, tooltip='Click me.')
 def featureful_button(instance):
-    prefix = instance.Prefix + ' ' if instance.Prefix else ''
-    return '<p>Hello {prefix}{entity}!</p>'.format(
-        prefix=prefix, entity=instance.entity)
+    return format_html('<p>Hello {prefix}{entity}!</p>',
+        prefix=instance.Prefix + ' ' if instance.Prefix else '',
+        entity=instance.entity)
 
 
 @shortcodes.button(models.SomeButtonForm, icon='img/audio.png')
@@ -34,3 +37,8 @@ class SomeMenu(shortcodes.Menu):
 
     shortcodes.GenericMenubutton(
         'generic_menubutton', models.GenericMenubuttonForm, 'person.html')
+
+    @shortcodes.menubutton(models.UnsafeMenubuttonForm)
+    def unsafe_menubutton(instance):
+        untrusted_input = 'Malicious Code'
+        return '<p>{input}</p>'.format(input=untrusted_input)

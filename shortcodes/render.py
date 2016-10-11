@@ -1,5 +1,7 @@
 import warnings
+
 from django.conf import settings
+from django.utils.safestring import SafeString, mark_safe
 
 from .register import Shortcode
 from .utils import ShortcodeSoup
@@ -12,7 +14,7 @@ def getcontent(func, pk):
             instance = shortcode.get_instance(pk=pk)
         except shortcode.model.DoesNotExist as e:
             warnings.warn(str(e))
-            return ''
+            return mark_safe('')
     else:
         instance = shortcode.get_instance(pk=pk)
     return shortcode.fn(instance)
@@ -28,8 +30,12 @@ def richtext_filters(html):
             if settings.DEBUG:
                 raise
             else:
-                content = ''
+                content = mark_safe('')
                 warnings.warn(str(e))
+
+        if not isinstance(content, SafeString):
+            raise TypeError("Shortcode function must return a safe string.")
+
         tag.replace_with(ShortcodeSoup(content))
 
     # BeautifulSoup adds closing br tags, which the browser interprets as

@@ -7,7 +7,7 @@ This package aims to fulfill the same needs as Wordpress's shortcodes but with t
 
 A mezzaine-shortcode is just a python function paired with a `ModelForm`. The `ModelForm` allows users to create content to insert into the page, while the function behaves similar to a Django view, with the following substitutions:
 - Accepts a `ModelForm` instance as its sole argument rather than an `HttpRequest`.
-- Returns a string of html rather than an `HttpResponse`.
+- Returns a [safe string](https://docs.djangoproject.com/en/stable/topics/security/#cross-site-scripting-xss-protection) of html rather than an `HttpResponse`.
 
 Screenshots
 ===========
@@ -119,12 +119,15 @@ Buttons are created with the `button` decorator, which takes the following param
 - `tooltip` (*optional*): The string displayed on mouseover.
 
 ```py
+from django.utils.safestring import mark_safe
+
+
 @shortcodes.button(
     MyModelForm
     icon='path/to/image.png',
     tooltip='Click me.')
 def my_button(instance):
-    return '<div>Some html string.</div>'
+    return mark_safe('<div>Some html string.</div>')
 ```
 
 ### Generic Buttons
@@ -151,13 +154,16 @@ Menus are just dropdown collections of buttons. They inherit from `shortcodes.Me
 Menubuttons are registered with the `shortcodes.menubutton` decorator, which takes the same arguments as regular buttons.
 
 ```py
+from django.utils.html import format_html
+
+
 class SomeMenu(shortcodes.Menu):
     displayname='Some Menu'
     tooltip='Input your stuff'
 
     @shortcodes.menubutton(MyModelForm)
     def some_menubutton(instance):
-        ...
+      return format_html('<p>Hello {name}!</p>', name=instance.name)
 ```
 
 Or with `shortcodes.GenericMenubutton` which behaves identically to regular generic buttons except it's in class scope:

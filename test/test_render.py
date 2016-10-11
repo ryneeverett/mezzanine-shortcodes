@@ -1,3 +1,4 @@
+import textwrap
 import unittest
 from unittest import mock
 
@@ -13,6 +14,8 @@ except ImproperlyConfigured:
     pass
 else:
     from shortcodes import state, render
+
+from example_app import models
 
 PRE_HTML = """\
 <p><strong>An example:</strong></p>
@@ -49,6 +52,18 @@ class TestFilters(TestCase):
             result = render.richtext_filters(PRE_HTML.format(pk=100))
         expected_result = POST_HTML.format(content='')
         self.assertEqual(result, expected_result)
+
+    def test_richtext_filters_unsafe_string(self):
+        instance = models.UnsafeMenubutton.objects.create(entity='nobody')
+        instance.save()
+        pre_html = textwrap.dedent("""\
+            <div
+            class='mezzanine-shortcodes'
+            data-name='unsafe_menubutton'
+            data-pk='{pk}'
+            >""".format(pk=instance.pk))
+        with self.assertRaisesRegex(TypeError, 'safe string'):
+            render.richtext_filters(pre_html)
 
     def test_getcontent(self):
         content = render.getcontent('featureful_button', 1)

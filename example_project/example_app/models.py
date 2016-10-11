@@ -37,6 +37,11 @@ class GenericMenubutton(FeaturefulButton):
         app_label = 'example_app'
 
 
+class UnsafeMenubutton(FeaturefulButton):
+    class Meta:
+        app_label = 'example_app'
+
+
 class FeaturefulButtonForm(forms.ModelForm):
     class Meta:
         model = FeaturefulButton
@@ -70,4 +75,10 @@ class IconMenubuttonForm(forms.ModelForm):
 class GenericMenubuttonForm(forms.ModelForm):
     class Meta:
         model = GenericMenubutton
+        fields = '__all__'
+
+
+class UnsafeMenubuttonForm(forms.ModelForm):
+    class Meta:
+        model = UnsafeMenubutton
         fields = '__all__'
