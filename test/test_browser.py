@@ -3,10 +3,13 @@ import sys
 import time
 import inspect
 import tempfile
+import textwrap
 import unittest
 import contextlib
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
+from mezzanine.pages.models import RichTextPage
 
 from selenium.webdriver.common.keys import Keys
 import splinter
@@ -123,13 +126,14 @@ class SplinterTestCase(StaticLiveServerTestCase):
         self.fillPerson('Spongebob')
         self.clickInsert()
 
-    def savePage(self):
-        self.browser.fill('title', 'Some Page')
+    def savePage(self, title='Some Page'):
+        self.browser.fill('title', title)
         self.browser.find_by_value('Save and continue editing').click()
         time.sleep(5)  # XXX
         self.browser.is_element_present_by_css('.messagelist > .success')
         self.assertInMessagelist(
-            'The Rich text page "Some Page" was (added|changed) successfully.')
+            'The Rich text page "{title}" was (added|changed) successfully.'
+            .format(title=title))
 
     def fillPerson(self, person):
         self.jQueryDialog(
@@ -216,7 +220,7 @@ class TestAdmin(SplinterTestCase):
         self.assertFalse(shortcode.has_attr('data-pk'))
 
         # Save page.
-        self.savePage()
+        self.savePage('Featureful Page')
 
         # Check source code.
         shortcode = ShortcodeSoup(self.source).find_shortcodes().pop()
@@ -228,6 +232,13 @@ class TestAdmin(SplinterTestCase):
         self.assertEqual(
             set(shortcode.attrs.keys()),
             set(('class', 'contenteditable', 'data-pk', 'data-name')))
+
+        # Check page model-instance content.
+        page = RichTextPage.objects.get(title='Featureful Page')
+        self.assertEqual(page.content, textwrap.dedent("""\
+            <p></p>
+            <div class="mezzanine-shortcodes" data-name="featureful_button" data-pk="{pk}"></div>
+            <p></p>""".format(pk=shortcode['data-pk'])))
 
     @unittest.skipIf(WEBDRIVER == 'phantomjs', "Can't open contextmenu.")
     def test_editing(self):
