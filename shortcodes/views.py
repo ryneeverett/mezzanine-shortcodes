@@ -1,10 +1,11 @@
 import json
 import uuid
 
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.utils.html import format_html
 
 from . import state
 
@@ -33,11 +34,8 @@ def dialog(request, name):
                 request.GET['pending'] if 'pending' in request.GET else
                 uuid.uuid4().hex)
             state.PENDING_INSTANCES[pending_id] = modelform.instance
-            return HttpResponse(
-                "<script src='{src}' data-pending='{pending_id}'>"
-                "</script>".format(
-                    src=staticfiles.static('shortcodes/insert_shortcode.js'),
-                    pending_id=pending_id))
+            return redirect(
+                'insert_shortcode', name=name, pending_id=pending_id)
     else:
         if 'pk' in request.GET:  # edit saved instance
             model = modelformclass._meta.model.objects.get(
@@ -49,3 +47,16 @@ def dialog(request, name):
             modelform = modelformclass()
 
     return render(request, 'shortcodes/dialog.html', {'form': modelform})
+
+
+@staff_member_required
+def insert_shortcode(request, name, pending_id):
+    html = format_html(
+        "<div "
+        "class='mezzanine-shortcodes fresh-shortcode' "
+        "data-name='{name}' "
+        "data-pending='{pending_id}' "
+        "></div>",
+        name=name, pending_id=pending_id)
+    js = render_to_string('shortcodes/insert_shortcode.js', {'html': html})
+    return HttpResponse('<script>' + js + '</script>')

@@ -302,7 +302,11 @@ class TestAdmin(SplinterTestCase):
         # Modify input and submit.
         self.fillPerson('Squidward')
         self.clickInsert()
+        if WEBDRIVER != 'phantomjs':
+            time.sleep(1)
         self.savePage()
+        if WEBDRIVER != 'phantomjs':
+            time.sleep(1)
 
         # Open edit dialog.
         with self.browser.get_iframe('id_content_ifr') as iframe:
@@ -330,9 +334,7 @@ class TestAdmin(SplinterTestCase):
         Shortcodes removed before saving the page aren't added to database.
         """
         self.insertFeaturefulButton()
-
-        if WEBDRIVER == 'phantomjs':
-            time.sleep(1)  # XXX
+        time.sleep(1)
 
         # Remove shortcode.
         self.jQueryContent(".find('body').empty().append('blah')")
@@ -426,6 +428,8 @@ class TestPage(SplinterTestCase):
         if WEBDRIVER == 'phantomjs':
             self.browser.execute_script("jQuery('.mceEditor').show()")
             self.browser.find_by_css('.mceEditor').type(Keys.ENTER)
+        else:
+            time.sleep(1)
 
         self.browser.find_by_text('generic button model').first.click()
         self.fillPerson('Squidward')

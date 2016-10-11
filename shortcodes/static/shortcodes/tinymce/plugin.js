@@ -29,7 +29,7 @@
           instance = $elem.data('pk') ? 'pk=' + $elem.data('pk') : 'pending=' + $elem.data('pending');
         }
 
-        window.SHORTCODES.activeDialog = {name: name, $elem: $elem, isNew: isNew};
+        window.SHORTCODES.activeDialog = {$elem: $elem, isNew: isNew};
 
         editor.windowManager.open({
           title: displayname,
