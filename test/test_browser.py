@@ -371,7 +371,7 @@ class TestAdmin(SplinterTestCase):
             return jQuery(this).css('background-image').replace(/\"/g, '') ===
               'url({base_url}/static/img/audio.png?name=icon_button)';
           }}).click();""".format(base_url=self.live_server_url))
-        self.assertTrue(self.browser.is_text_present('some button'), 5)
+        self.assertTrue(self.browser.is_text_present('some button', 5))
 
     def test_menu(self):
         # Test tooltip.
