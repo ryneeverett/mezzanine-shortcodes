@@ -175,10 +175,10 @@ class SomeMenu(shortcodes.Menu):
         'some_menubutton', MyModelForm, 'some_template.html')
 ```
 
-Data Modeling Advise
+Data Modeling Advice
 ====================
 
-Mezzanine-shortcodes is designed for a one-to-one relationship between model instances and references to them in page content. This app even auto-cleans dereferenced model instances so you only have to interact with them through the shortcode forms. In this sense, even though you're defining the models, mezzanine-shortcodes "owns" them. A few concrete pieces of advise follow from this:
+Mezzanine-shortcodes is designed for a one-to-one relationship between model instances and references to them in page content. This app even auto-cleans dereferenced model instances so you only have to interact with them through the shortcode forms. In this sense, even though you're defining the models, mezzanine-shortcodes "owns" them. A few concrete pieces of advice follow from this:
 
 - Do not register your modelform in the admin. This adds the temptation to add or delete models directly which will lead to either dangling references or dangling model instances.
 - Use dedicated models. Existing models are presumably being consumed elsewhere and you don't want to give them over to mezzanine-shortcodes, by which you could easily dereference and accidentally delete them. Rather, use relation fields to those existing models.
@@ -191,7 +191,7 @@ How it Works
 - When staff users edit a richtext page:
     - Metadata about your shortcodes is injected into the page by a Django view and rendered into menus/buttons by javascript.
     - When a button is clicked, its `ModelForm` is rendered into a dialog. When submitted, a placeholder html element is added to store a reference to the `ModelForm` and the `ModelForm` instance.
-    - When the page is saved, `ModelForm` instance is saved and it's reference is replaced with a reference to the primary key of the instance.
+    - When the page is saved, the `ModelForm` instance is saved and it's reference is replaced with a reference to the primary key of the instance.
 - When users view a richtext page, the placeholders are parsed, the `ModelForm` instances retrieved and passed into their associated function, and the placeholders are replaced with the return value.
 
 Developing
